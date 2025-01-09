@@ -99,7 +99,7 @@ export default function TrainModelZone({ packSlug }: { packSlug: string }) {
         duration: 5000,
       });
     },
-    [files],
+    [files, toast],
   );
 
   const removeFile = useCallback(
@@ -111,70 +111,98 @@ export default function TrainModelZone({ packSlug }: { packSlug: string }) {
 
   const trainModel = useCallback(async () => {
     setIsLoading(true);
-    // Upload each file to Vercel blob and store the resulting URLs
-    const blobUrls = [];
+    try {
+      // Upload each file to Vercel blob and store the resulting URLs
+      const blobUrls: string[] = [];
 
-    if (files) {
-      for (const file of files) {
-        const blob = await upload(file.name, file, {
-          access: 'public',
-          handleUploadUrl: '/astria/train-model/image-upload',
-        });
-        blobUrls.push(blob.url);
+      if (files.length > 0) {
+        // const blob = await upload(files[0].name, files[0], {
+        //   access: 'public',
+        //   handleUploadUrl: '/astria/train-model/image-upload',
+        // });
+
+        // console.log(blob);
+
+        for (const file of files) {
+          try {
+            const blob = await upload(file.name, file, {
+              access: 'public',
+              handleUploadUrl: '/astria/train-model/image-upload',
+            });
+            blobUrls.push(blob.url);
+          } catch (uploadError: any) {
+            console.error(`Error uploading file ${file.name}:`, uploadError);
+            toast({
+              title: 'Upload Error',
+              description: `Failed to upload ${file.name}. Please try again.`,
+              duration: 5000,
+            });
+            setIsLoading(false);
+            return;
+          }
+        }
       }
-    }
 
-    // console.log(blobUrls, "blobUrls");
+      const payload = {
+        urls: blobUrls,
+        name: form.getValues('name').trim(),
+        type: form.getValues('type'),
+        pack: packSlug,
+      };
 
-    const payload = {
-      urls: blobUrls,
-      name: form.getValues('name').trim(),
-      type: form.getValues('type'),
-      pack: packSlug,
-    };
+      // Send the JSON payload to the "/astria/train-model" endpoint
+      const response = await fetch('/astria/train-model', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
-    // Send the JSON payload to the "/astria/train-model" endpoint
-    const response = await fetch('/astria/train-model', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
+      if (!response.ok) {
+        const responseData = await response.json();
+        const responseMessage: string = responseData.message || 'An unexpected error occurred.';
+        console.error('Something went wrong!', responseMessage);
 
-    setIsLoading(false);
+        const messageWithButton = (
+          <div className='flex flex-col gap-4'>
+            {responseMessage}
+            <a href='/get-credits'>
+              <Button size='sm'>Get Credits</Button>
+            </a>
+          </div>
+        );
 
-    if (!response.ok) {
-      const responseData = await response.json();
-      const responseMessage: string = responseData.message;
-      console.error('Something went wrong! ', responseData);
-      const messageWithButton = (
-        <div className='flex flex-col gap-4'>
-          {responseMessage}
-          <a href='/get-credits'>
-            <Button size='sm'>Get Credits</Button>
-          </a>
-        </div>
-      );
+        toast({
+          title: 'Something went wrong!',
+          description: responseMessage.includes('Not enough credits')
+            ? messageWithButton
+            : responseMessage,
+          duration: 5000,
+        });
+        setIsLoading(false);
+        return;
+      }
+
       toast({
-        title: 'Something went wrong!',
-        description: responseMessage.includes('Not enough credits')
-          ? messageWithButton
-          : responseMessage,
+        title: 'Model queued for training',
+        description:
+          'The model was queued for training. You will receive an email when the model is ready to use.',
         duration: 5000,
       });
-      return;
+
+      router.push('/');
+    } catch (error: any) {
+      console.error('Unexpected error:', error);
+      toast({
+        title: 'Unexpected Error',
+        description: 'An unexpected error occurred. Please try again later.',
+        duration: 5000,
+      });
+    } finally {
+      setIsLoading(false);
     }
-
-    toast({
-      title: 'Model queued for training',
-      description:
-        'The model was queued for training. You will receive an email when the model is ready to use.',
-      duration: 5000,
-    });
-
-    router.push('/');
-  }, [files]);
+  }, [files, form, packSlug, router, toast]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -294,6 +322,7 @@ export default function TrainModelZone({ packSlug }: { packSlug: string }) {
                   <img
                     src={URL.createObjectURL(file)}
                     className='rounded-md w-24 h-24 object-cover'
+                    alt={file.name}
                   />
                   <Button
                     variant='outline'

@@ -1,5 +1,7 @@
+// /pages/api/astria/train-model/image-upload.ts
+
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
+import { handleUpload, type HandleUploadBody } from '@vercel/blob/client'; // Corrected import
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
@@ -29,27 +31,32 @@ export async function POST(request: Request): Promise<NextResponse> {
             userId: user.id, // Including the user ID in the token payload
             // optional, sent to your server on upload completion
             // you could pass a user id from auth, or a value from clientPayload
+            pathname: pathname,
           }),
         };
       },
-      onUploadCompleted: async ({ blob, tokenPayload }) => {
+      onUploadCompleted: async ({ blob, tokenPayload }: any) => {
         // Get notified of client upload completion
         // ⚠️ This will not work on `localhost` websites,
         // Use ngrok or similar to get the full upload flow
-        console.log('blob upload completed', blob, tokenPayload);
+        console.log('Blob upload completed', blob, tokenPayload);
 
         try {
           // Run any logic after the file upload completed
-          // const { userId } = JSON.parse(tokenPayload);
-          // await db.update({ avatar: blob.url, userId });
+          const { userId } = JSON.parse(tokenPayload);
+          // Example: Update user's avatar URL in the database
+          // await db.updateUserAvatar(userId, blob.url);
+          // Ensure you have a corresponding function in your database layer
         } catch (error) {
-          throw new Error('Could not update user');
+          console.error('Error updating user data after upload:', error);
+          throw new Error('Could not update user data after upload');
         }
       },
     });
 
     return NextResponse.json(jsonResponse);
-  } catch (error) {
+  } catch (error: any) {
+    console.error('Error in image-upload endpoint:', error);
     return NextResponse.json(
       { error: (error as Error).message },
       { status: 400 }, // The webhook will retry 5 times waiting for a 200
