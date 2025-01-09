@@ -141,16 +141,16 @@ export async function POST(request: Request) {
   const modelId = data?.id;
 
   try {
-    const trainWebhook = `https://${process.env.VERCEL_URL}/astria/train-webhook`;
+    const trainWebhook = `https://headshots-ai-delta.vercel.app/astria/train-webhook`;
     const trainWebhookWithParams = `${trainWebhook}?user_id=${user.id}&model_id=${modelId}&webhook_secret=${appWebhookSecret}`;
 
-    const promptWebhook = `https://${process.env.VERCEL_URL}/astria/prompt-webhook`;
+    const promptWebhook = `https://headshots-ai-delta.vercel.app/astria/prompt-webhook`;
     const promptWebhookWithParams = `${promptWebhook}?user_id=${user.id}&&model_id=${modelId}&webhook_secret=${appWebhookSecret}`;
 
     const API_KEY = astriaApiKey;
     const DOMAIN = 'https://api.astria.ai';
 
-    console.log(process.env.VERCEL_URL, {
+    console.log({
       trainWebhook,
       user,
       modelId,
@@ -159,6 +159,24 @@ export async function POST(request: Request) {
       promptWebhookWithParams,
       trainWebhookWithParams,
     });
+    // const trainWebhook = `https://${process.env.VERCEL_URL}/astria/train-webhook`;
+    // const trainWebhookWithParams = `${trainWebhook}?user_id=${user.id}&model_id=${modelId}&webhook_secret=${appWebhookSecret}`;
+
+    // const promptWebhook = `https://${process.env.VERCEL_URL}/astria/prompt-webhook`;
+    // const promptWebhookWithParams = `${promptWebhook}?user_id=${user.id}&&model_id=${modelId}&webhook_secret=${appWebhookSecret}`;
+
+    // const API_KEY = astriaApiKey;
+    // const DOMAIN = 'https://api.astria.ai';
+
+    // console.log(process.env.VERCEL_URL, {
+    //   trainWebhook,
+    //   user,
+    //   modelId,
+    //   appWebhookSecret,
+    //   promptWebhook,
+    //   promptWebhookWithParams,
+    //   trainWebhookWithParams,
+    // });
 
     // Create a fine tuned model using Astria tune API
     const tuneBody = {
@@ -281,6 +299,8 @@ export async function POST(request: Request) {
         );
       }
     }
+
+    console.log('Train Model is success');
   } catch (e) {
     console.error(e);
     // Rollback: Delete the created model if something goes wrong
