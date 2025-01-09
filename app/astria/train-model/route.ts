@@ -59,7 +59,6 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
-
   let _credits = null;
 
   console.log({ stripeIsConfigured });
@@ -75,6 +74,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           message: 'Something went wrong!1',
+          error: creditError,
         },
         { status: 500 },
       );
@@ -92,6 +92,7 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             message: 'Something went wrong!2',
+            error: errorCreatingCredits,
           },
           { status: 500 },
         );
@@ -126,12 +127,12 @@ export async function POST(request: Request) {
     .select('id')
     .single();
 
-  console.log(modelError, data);
-
   if (modelError) {
+    console.error('modelError: ', modelError);
     return NextResponse.json(
       {
         message: 'Something went wrong!3',
+        error: modelError,
       },
       { status: 500 },
     );
@@ -141,24 +142,6 @@ export async function POST(request: Request) {
   const modelId = data?.id;
 
   try {
-    // const trainWebhook = `https://headshots-ai-delta.vercel.app/astria/train-webhook`;
-    // const trainWebhookWithParams = `${trainWebhook}?user_id=${user.id}&model_id=${modelId}&webhook_secret=${appWebhookSecret}`;
-
-    // const promptWebhook = `https://headshots-ai-delta.vercel.app/astria/prompt-webhook`;
-    // const promptWebhookWithParams = `${promptWebhook}?user_id=${user.id}&&model_id=${modelId}&webhook_secret=${appWebhookSecret}`;
-
-    // const API_KEY = astriaApiKey;
-    // const DOMAIN = 'https://api.astria.ai';
-
-    // console.log({
-    //   trainWebhook,
-    //   user,
-    //   modelId,
-    //   appWebhookSecret,
-    //   promptWebhook,
-    //   promptWebhookWithParams,
-    //   trainWebhookWithParams,
-    // });
     const trainWebhook = `https://${process.env.NEXT_VERCEL_URL}/astria/train-webhook`;
     const trainWebhookWithParams = `${trainWebhook}?user_id=${user.id}&model_id=${modelId}&webhook_secret=${appWebhookSecret}`;
 
@@ -167,16 +150,6 @@ export async function POST(request: Request) {
 
     const API_KEY = astriaApiKey;
     const DOMAIN = 'https://api.astria.ai';
-
-    console.log(process.env.VERCEL_URL, {
-      trainWebhook,
-      user,
-      modelId,
-      appWebhookSecret,
-      promptWebhook,
-      promptWebhookWithParams,
-      trainWebhookWithParams,
-    });
 
     // Create a fine tuned model using Astria tune API
     const tuneBody = {
@@ -213,14 +186,10 @@ export async function POST(request: Request) {
         callback: trainWebhookWithParams,
         prompt_attributes: {
           callback: promptWebhookWithParams,
-          num_images: 16,
         },
         image_urls: images,
-        num_images: 16,
       },
     };
-
-    console.log(packBody);
 
     const response = await axios.post(
       DOMAIN + (packsIsEnabled ? `/p/${pack}/tunes` : '/tunes'),
@@ -234,8 +203,6 @@ export async function POST(request: Request) {
     );
 
     const { status } = response;
-
-    console.log(response);
 
     if (status !== 201) {
       console.error({ status });
@@ -274,7 +241,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           message: 'Something went wrong!4',
-          error: { response, samplesError },
+          error: samplesError,
         },
         { status: 500 },
       );
@@ -288,7 +255,7 @@ export async function POST(request: Request) {
         .eq('user_id', user.id)
         .select('*');
 
-      console.log({ user });
+      console.log({ data });
       console.log({ subtractedCredits });
 
       if (updateCreditError) {
@@ -296,13 +263,12 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             message: 'Something went wrong!5',
+            error: updateCreditError,
           },
           { status: 500 },
         );
       }
     }
-
-    console.log('Train Model is success');
   } catch (e) {
     console.error(e);
     // Rollback: Delete the created model if something goes wrong
@@ -312,7 +278,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         message: 'Something went wrong!6',
-        error: { e, modelId },
+        error: e,
       },
       { status: 500 },
     );
