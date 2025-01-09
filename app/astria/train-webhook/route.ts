@@ -123,6 +123,8 @@ export async function POST(request: Request) {
   }
 
   try {
+    console.log(resendApiKey);
+
     if (resendApiKey) {
       const resend = new Resend(resendApiKey);
       await resend.emails.send({
