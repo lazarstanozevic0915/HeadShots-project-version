@@ -242,6 +242,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           message: 'Something went wrong!4',
+          error: { response, samplesError },
         },
         { status: 500 },
       );

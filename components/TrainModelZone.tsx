@@ -162,7 +162,7 @@ export default function TrainModelZone({ packSlug }: { packSlug: string }) {
       if (!response.ok) {
         const responseData = await response.json();
         const responseMessage: string = responseData.message || 'An unexpected error occurred.';
-        console.error('Something went wrong!', responseMessage);
+        console.error('Something went wrong!', responseData);
 
         const messageWithButton = (
           <div className='flex flex-col gap-4'>
