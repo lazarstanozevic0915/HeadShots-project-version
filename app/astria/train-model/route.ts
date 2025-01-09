@@ -272,9 +272,9 @@ export async function POST(request: Request) {
   } catch (e) {
     console.error(e);
     // Rollback: Delete the created model if something goes wrong
-    // if (modelId) {
-    //   await supabase.from('models').delete().eq('id', modelId);
-    // }
+    if (modelId) {
+      await supabase.from('models').delete().eq('id', modelId);
+    }
     return NextResponse.json(
       {
         message: 'Something went wrong!6',
