@@ -123,7 +123,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    console.log(resendApiKey);
+    console.log('api key =>>>>>>>>>>>>>>>>>', resendApiKey);
+
+    console.log('user info =>>>>>>>>>>>>>>>>>>', user);
 
     if (resendApiKey) {
       const resend = new Resend(resendApiKey);
