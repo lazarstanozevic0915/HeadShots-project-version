@@ -278,6 +278,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         message: 'Something went wrong!6',
+        error: { e, modelId },
       },
       { status: 500 },
     );
