@@ -29,6 +29,8 @@ if (!appWebhookSecret) {
   throw new Error('MISSING APP_WEBHOOK_SECRET!');
 }
 
+console.log('request receive');
+
 export async function POST(request: Request) {
   type TuneData = {
     id: number;
