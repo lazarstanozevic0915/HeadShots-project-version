@@ -213,6 +213,7 @@ export async function POST(request: Request) {
         callback: trainWebhookWithParams,
         prompt_attributes: {
           callback: promptWebhookWithParams,
+          num_images: 16,
         },
         image_urls: images,
         num_images: 16,
