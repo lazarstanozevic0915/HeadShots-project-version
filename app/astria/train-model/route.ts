@@ -126,8 +126,6 @@ export async function POST(request: Request) {
     .select('id')
     .single();
 
-  console.log(supabase);
-
   console.log(modelError, data);
 
   if (modelError) {
@@ -151,6 +149,16 @@ export async function POST(request: Request) {
 
     const API_KEY = astriaApiKey;
     const DOMAIN = 'https://api.astria.ai';
+
+    console.log(process.env.VERCEL_URL, {
+      trainWebhook,
+      user,
+      modelId,
+      appWebhookSecret,
+      promptWebhook,
+      promptWebhookWithParams,
+      trainWebhookWithParams,
+    });
 
     // Create a fine tuned model using Astria tune API
     const tuneBody = {
@@ -192,6 +200,8 @@ export async function POST(request: Request) {
       },
     };
 
+    console.log(packBody);
+
     const response = await axios.post(
       DOMAIN + (packsIsEnabled ? `/p/${pack}/tunes` : '/tunes'),
       packsIsEnabled ? packBody : tuneBody,
@@ -204,6 +214,8 @@ export async function POST(request: Request) {
     );
 
     const { status } = response;
+
+    console.log(response);
 
     if (status !== 201) {
       console.error({ status });
@@ -256,7 +268,7 @@ export async function POST(request: Request) {
         .eq('user_id', user.id)
         .select('*');
 
-      console.log({ data });
+      console.log({ user });
       console.log({ subtractedCredits });
 
       if (updateCreditError) {
