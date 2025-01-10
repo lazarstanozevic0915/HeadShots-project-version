@@ -1,0 +1,36 @@
+# Astria Vars (AI service)
+# Get API key - https://www.astria.ai/users/edit#api
+ASTRIA_API_KEY=sd_K8jRV3JwAEt9G3aXYqLQYuyk6umQjc
+# If enabled, Astria will be enabled in test mode which will not charge you, but will return dummy results.
+ASTRIA_TEST_MODE=false
+PACK_QUERY_TYPE=both # Options: 'users', 'gallery', 'both'
+NEXT_PUBLIC_TUNE_TYPE=packs #Options: 'packs', 'tune'
+
+
+# This can be any random string, it is used to secure the webhook endpoint.
+APP_WEBHOOK_SECRET=shadf892yr398hq23h
+
+# With vercel deploy supabase env vars are auto generated!
+# Configure auth magic link & redirect urls > https://github.com/leap-ai/headshots-starter#5-magic-link-auth-supabase
+# Locally get Supabase details from your project settings > API - https://app.supabase.com/project/_/settings/api
+NEXT_PUBLIC_SUPABASE_URL=https://otyhtrqxkksylsabdyyi.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90eWh0cnF4a2tzeWxzYWJkeXlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY0OTg4ODYsImV4cCI6MjA1MjA3NDg4Nn0.F8egNeCSrtzsgRzmZ49p18E4abl2xFF_S415XMtwdso
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90eWh0cnF4a2tzeWxzYWJkeXlpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNjQ5ODg4NiwiZXhwIjoyMDUyMDc0ODg2fQ.TXGwMKVRiBv3IZAetilvMSQjnlfcTjWGAFK2Xi2CibE
+
+# VERCEL BLOB VARS (Image storage service)
+BLOB_READ_WRITE_TOKEN=vercel_blob_rw_EdVWDTPX1n63ZE5c_Vq9gZ8TAuU3sif1pIXHYmcR8HgvFsb
+
+# RESEND VARS (Email service)
+RESEND_API_KEY=re_G7U8YpCJ_Mt4FKZpRdoMWQ74tCXtKXuc4
+
+# STRIPE VARS (Payment service)
+STRIPE_SECRET_KEY=sk_test_51QffEdCvesibYxsT8EriLgCtxtv0aJ2YHU5SBveQ5zlMc7SNMLRGWJccxzZ91Mn0c5Pj67DyaJuyJnIEBCVjE2r600ZRvZ6vtA
+STRIPE_WEBHOOK_SECRET=whsec_dAvAVlvJy9KeBEG5oy775WTQbyBuSgQd
+STRIPE_PRICE_ID_ONE_CREDIT=price_1QfnXyCvesibYxsTsWb5SMxp
+STRIPE_PRICE_ID_THREE_CREDITS=price_1QfncNCvesibYxsToIwjRzqF
+STRIPE_PRICE_ID_FIVE_CREDITS=price_1QfncbCvesibYxsTqqkZwiBh
+NEXT_PUBLIC_STRIPE_IS_ENABLED=true # set to true to enable Stripe payments
+
+# DEPLOYMENT
+DEPLOYMENT_PROVIDER=vercel # or replit
+VERCEL_URL=localhost:3000 # eg. headshots-starter.vercel.app to catch webhooks from Leap. Use ngrok locally (example: 0aaf-204-11-230-50.ngrok-free.app)
